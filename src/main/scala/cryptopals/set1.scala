@@ -31,7 +31,7 @@ object Set1 {
     left.zip(right).map { case (l, r) => (l^r).toByte }
   }
 
-  val LetterDistribution: Map[Char, Double] = Map(
+  val EnglishLetterDistribution: Map[Char, Double] = Map(
     'E' -> .1249,
     'T' -> .0928,
     'A' -> .0804,
@@ -60,9 +60,34 @@ object Set1 {
     'Z' -> .0009
   )
 
-  // def singleByteXOR(ciphertext: List[Byte], key: Byte): List[Byte] = {
-  // }
+  val EnglishLetters = EnglishLetterDistribution.keys
 
-  // def getDistribution(input: String): Map[Char, Double] = {
+
+  def getDistributionScore(text: String): Double = {
+    distanceFromEnglish(distributionForText(text))
+  }
+
+  // just average of difference of all distributions for now
+  // lower is better
+  def distanceFromEnglish(distribution: Map[Char, Double]): Double = {
+    val dists = distribution.map { case (letter, dist) => 
+      for (englishDist <- EnglishLetterDistribution.get(letter)) {
+        (dist - englishDist).abs
+      }
+    }
+    dists.sum / dists.length
+  }
+
+  def distributionForText(text: String): Map[Char, Double] = {
+    val ntext = normalize(text)
+    ntext.intersect(EnglishLetters).map { letter =>
+      (letter, ntext.count(_ == letter) / ntext.length)
+    }.toMap
+  }
+
+  def normalize(text: String): String = {
+    text.toUpperCase().filter(EnglishLetters contains _)
+  }
+  // def singleByteXOR(ciphertext: List[Byte], key: Byte): List[Byte] = {
   // }
 }
