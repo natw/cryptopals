@@ -15,6 +15,10 @@ object Set1 {
     DatatypeConverter.printBase64Binary(DatatypeConverter.parseHexBinary(input))
   }
 
+  def hex2Ascii(input: String): String = {
+    DatatypeConverter.parseHexBinary(input).toString
+  }
+
   def bytes2hex(input: List[Byte]): String = {
     DatatypeConverter.printHexBinary(input)
   }
@@ -27,8 +31,12 @@ object Set1 {
     bytes2hex(fixedXOR(hex2bytes(left), hex2bytes(right)))
   }
 
-  def fixedXOR(left: List[Byte], right: List[Byte]): List[Byte] = {
-    left.zip(right).map { case (l, r) => (l^r).toByte }
+  def fixedXOR(left: Seq[Byte], right: Seq[Byte]): List[Byte] = {
+    left.zip(right).map { case (l, r) => (l^r).toByte }.toList
+  }
+
+  def singleByteXOR(ciphertext: List[Byte], key: Byte): List[Byte] = {
+    fixedXOR(ciphertext, Iterator.continually(key).toSeq)
   }
 
   val EnglishLetterDistribution: Map[Char, Double] = Map(
@@ -86,6 +94,5 @@ object Set1 {
   def normalize(text: String): String = {
     text.toUpperCase().filter(EnglishLetters contains _)
   }
-  // def singleByteXOR(ciphertext: List[Byte], key: Byte): List[Byte] = {
-  // }
+
 }

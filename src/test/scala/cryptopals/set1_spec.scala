@@ -33,4 +33,22 @@ class Set1 extends Specification {
       Set1.hexXOR(left, right).toLowerCase() === out
     }
   }
+
+  // "singleByteXOR" should {
+    // "work" in {
+    // }
+  // }
+
+  "== challenge 3" should {
+    "find plaintext" in {
+      val ct = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
+      val possibleKeys = ('a' to 'z')
+      for (key <- possibleKeys) {
+        var decoded = new String(Set1.singleByteXOR(Set1.hex2bytes(ct), key.toByte).toArray, "US-ASCII")
+        var score = Set1.getDistributionScore(decoded)
+        println(s"$key - $decoded - $score")
+      }
+      1 === 1
+    }
+  }
 }
