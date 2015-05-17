@@ -1,6 +1,7 @@
 package cryptopals
 
 import scala.collection.JavaConverters._
+import scala.collection.GenSeq
 import scala.language.implicitConversions
 import javax.xml.bind.DatatypeConverter
 
@@ -11,14 +12,6 @@ object Set1 {
   implicit def arrayToList[A](a: Array[A]) = a.toList
   implicit def listToArray[A:ClassTag](l: List[A]) = l.toArray
 
-  def hex2base64(input: String): String = {
-    DatatypeConverter.printBase64Binary(DatatypeConverter.parseHexBinary(input))
-  }
-
-  def hex2Ascii(input: String): String = {
-    DatatypeConverter.parseHexBinary(input).toString
-  }
-
   def bytes2hex(input: List[Byte]): String = {
     DatatypeConverter.printHexBinary(input)
   }
@@ -27,16 +20,23 @@ object Set1 {
     DatatypeConverter.parseHexBinary(input)
   }
 
-  def hexXOR(left: String, right: String): String = {
-    bytes2hex(fixedXOR(hex2bytes(left), hex2bytes(right)))
+  def hex2base64(input: String): String = {
+    DatatypeConverter.printBase64Binary(DatatypeConverter.parseHexBinary(input))
   }
 
-  def fixedXOR(left: Seq[Byte], right: Seq[Byte]): List[Byte] = {
+  def hex2ASCII(input: String): String = {
+    DatatypeConverter.parseHexBinary(input).toString
+  }
+
+  def hexXOR(l: String, r: String): String = bytes2hex(fixedXOR(hex2bytes(l), hex2bytes(r)))
+
+
+  def fixedXOR[T <% Iterable[Byte]](left: T, right: T): List[Byte] = {
     left.zip(right).map { case (l, r) => (l^r).toByte }.toList
   }
 
   def singleByteXOR(ciphertext: List[Byte], key: Byte): List[Byte] = {
-    fixedXOR(ciphertext, Iterator.continually(key).toSeq)
+    fixedXOR(ciphertext, Iterator.continually(key).toIterable)
   }
 
   val EnglishLetterDistribution: Map[Char, Double] = Map(
@@ -85,7 +85,7 @@ object Set1 {
   }
 
   def distributionForText(text: String): Map[Char, Double] = {
-    val ntext = normalize(text).toSet
+    val ntext: Set[Char] = normalize(text).toSet
     ntext.intersect(EnglishLetters).map { letter =>
       (letter, ntext.count(_ == letter).toDouble / ntext.size)
     }.toMap
