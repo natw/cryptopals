@@ -60,7 +60,7 @@ object Set1 {
     'Z' -> .0009
   )
 
-  val EnglishLetters = EnglishLetterDistribution.keys
+  val EnglishLetters = EnglishLetterDistribution.keySet
 
 
   def getDistributionScore(text: String): Double = {
@@ -71,17 +71,15 @@ object Set1 {
   // lower is better
   def distanceFromEnglish(distribution: Map[Char, Double]): Double = {
     val dists = distribution.map { case (letter, dist) => 
-      for (englishDist <- EnglishLetterDistribution.get(letter)) {
-        (dist - englishDist).abs
-      }
+      EnglishLetterDistribution.get(letter).map { (engDist: Double) => (dist - engDist).abs }.get
     }
-    dists.sum / dists.length
+    dists.reduce(_ + _) / dists.size
   }
 
   def distributionForText(text: String): Map[Char, Double] = {
-    val ntext = normalize(text)
+    val ntext = normalize(text).toSet
     ntext.intersect(EnglishLetters).map { letter =>
-      (letter, ntext.count(_ == letter) / ntext.length)
+      (letter, ntext.count(_ == letter).toDouble / ntext.size)
     }.toMap
   }
 
