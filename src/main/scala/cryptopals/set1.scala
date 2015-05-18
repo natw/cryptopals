@@ -94,5 +94,4 @@ object Set1 {
   def normalize(text: String): String = {
     text.toUpperCase().filter(EnglishLetters contains _)
   }
-
 }

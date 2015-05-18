@@ -1,4 +1,5 @@
 import org.specs2.mutable._
+import scala.io.Source
 
 import cryptopals.Set1._
 
@@ -44,6 +45,26 @@ class Set1 extends Specification {
         (key, decoded, score)
       }.minBy { case (k, d, s) => { s } }
       println("challenge 3")
+      println(tup._1)
+      println(tup._2)
+      1 === 1
+    }
+  }
+
+  "== challenge 4" should {
+    "find plaintext from file" in {
+      val possibleKeys = ('a' to 'z')
+      val in = Source.fromInputStream(getClass.getResourceAsStream("4.txt"))
+      println("== challenge 4")
+      val scored = in.getLines.flatMap { (line: String) =>
+        possibleKeys.map { (key: Char) =>
+          val decoded = new String(singleByteXOR(hex2bytes(line), key.toByte).toArray, "US-ASCII")
+          val score = getDistributionScore(decoded)
+          (key, decoded, score)
+        }
+      }
+      for (t <- scored) { println(t._2) }
+      val tup = scored.minBy { case (k,d,s) => { s } }
       println(tup._1)
       println(tup._2)
       1 === 1
