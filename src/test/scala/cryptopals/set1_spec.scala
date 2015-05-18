@@ -34,20 +34,18 @@ class Set1 extends Specification {
     }
   }
 
-  // "singleByteXOR" should {
-    // "work" in {
-    // }
-  // }
-
   "== challenge 3" should {
     "find plaintext" in {
       val ct = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
       val possibleKeys = ('a' to 'z')
-      for (key <- possibleKeys) {
+      val tup = possibleKeys.map { (key: Char) =>
         var decoded = new String(singleByteXOR(hex2bytes(ct), key.toByte).toArray, "US-ASCII")
         var score = getDistributionScore(decoded)
-        println(s"$key - $decoded - $score")
-      }
+        (key, decoded, score)
+      }.minBy { case (k, d, s) => { s } }
+      println("challenge 3")
+      println(tup._1)
+      println(tup._2)
       1 === 1
     }
   }
