@@ -1,7 +1,6 @@
 package cryptopals
 
 import scala.collection.JavaConverters._
-import scala.collection.GenSeq
 import scala.language.implicitConversions
 import javax.xml.bind.DatatypeConverter
 
@@ -28,6 +27,10 @@ object Set1 {
     DatatypeConverter.parseHexBinary(input).toString
   }
 
+  def ascii2hex(input: String): String = {
+    bytes2hex(input.toCharArray.map(_.toByte))
+  }
+
   def hexXOR(l: String, r: String): String = bytes2hex(fixedXOR(hex2bytes(l), hex2bytes(r)))
 
 
@@ -37,6 +40,11 @@ object Set1 {
 
   def singleByteXOR(ciphertext: List[Byte], key: Byte): List[Byte] = {
     fixedXOR(ciphertext, Iterator.continually(key).toIterable)
+  }
+
+  def repeatingXOR[T <: Iterable[Byte]](ct: T, key: T): List[Byte] = {
+    def cycle: Stream[Byte] = key.toStream append cycle
+    fixedXOR(ct, cycle)
   }
 
   val EnglishLetterDistribution: Map[Char, Double] = Map(

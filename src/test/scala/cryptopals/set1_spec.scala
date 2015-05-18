@@ -64,17 +64,25 @@ class Set1 extends Specification {
         }
       }.toList.sortBy(_._3)
 
-      // val top10 = scored.take(10)
-
       scored.filter { case (k: Byte, d: String, s: Double) =>
         containsOnlyPrintableASCII(d)
       }.map { case (k: Byte, d: String, s: Double) =>
         var filtered = printableASCII(d)
         println(containsOnlyASCII(filtered))
         println(filtered)
-        // println(s"$k - $filtered ($s)")
       }
       1 === 1
+    }
+  }
+
+  "=== challenge 5" should {
+    "XOR correctly" in {
+      val pt = """Burning 'em, if you ain't quick and nimble
+                 |I go crazy when I hear a cymbal""".stripMargin
+      val key = "ICE"
+      val ct = bytes2hex(repeatingXOR(hex2bytes(ascii2hex(pt)), hex2bytes(ascii2hex(key)))).toLowerCase
+      val expected = "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f"
+      ct === expected
     }
   }
 }
