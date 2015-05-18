@@ -81,17 +81,36 @@ object Set1 {
     val dists = distribution.map { case (letter, dist) => 
       EnglishLetterDistribution.get(letter).map { (engDist: Double) => (dist - engDist).abs }.get
     }
+    if (dists.isEmpty) { return 12.0 }
     dists.reduce(_ + _) / dists.size
   }
 
   def distributionForText(text: String): Map[Char, Double] = {
-    val ntext: Set[Char] = normalize(text).toSet
+    val ntext: Set[Char] = normalizeInput(text).toSet
     ntext.intersect(EnglishLetters).map { letter =>
       (letter, ntext.count(_ == letter).toDouble / ntext.size)
     }.toMap
   }
 
-  def normalize(text: String): String = {
+  def normalizeInput(text: String): String = {
     text.toUpperCase().filter(EnglishLetters contains _)
   }
+
+  def printableASCII(text: String): String = {
+    text.filter { (c: Char) =>
+      var i = c.toInt
+      i > 31 && i < 127
+    }
+  }
+
+  def containsOnlyPrintableASCII(text: String): Boolean = {
+    text == printableASCII(text)
+  }
+
+  def onlyASCII(text: String): String = text.filter(_.toInt < 128)
+
+  def containsOnlyASCII(text: String): Boolean = {
+    text == onlyASCII(text)
+  }
+
 }

@@ -53,20 +53,27 @@ class Set1 extends Specification {
 
   "== challenge 4" should {
     "find plaintext from file" in {
-      val possibleKeys = ('a' to 'z')
+      val possibleKeys = (0 to 128).map(_.toByte)
       val in = Source.fromInputStream(getClass.getResourceAsStream("4.txt"))
       println("== challenge 4")
       val scored = in.getLines.flatMap { (line: String) =>
-        possibleKeys.map { (key: Char) =>
-          val decoded = new String(singleByteXOR(hex2bytes(line), key.toByte).toArray, "US-ASCII")
+        possibleKeys.map { (key: Byte) =>
+          val decoded = new String(singleByteXOR(hex2bytes(line), key).toArray, "US-ASCII")
           val score = getDistributionScore(decoded)
           (key, decoded, score)
         }
+      }.toList.sortBy(_._3)
+
+      // val top10 = scored.take(10)
+
+      scored.filter { case (k: Byte, d: String, s: Double) =>
+        containsOnlyPrintableASCII(d)
+      }.map { case (k: Byte, d: String, s: Double) =>
+        var filtered = printableASCII(d)
+        println(containsOnlyASCII(filtered))
+        println(filtered)
+        // println(s"$k - $filtered ($s)")
       }
-      for (t <- scored) { println(t._2) }
-      val tup = scored.minBy { case (k,d,s) => { s } }
-      println(tup._1)
-      println(tup._2)
       1 === 1
     }
   }
