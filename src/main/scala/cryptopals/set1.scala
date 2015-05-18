@@ -9,9 +9,15 @@ import scala.reflect.ClassTag
 
 object Set1 {
 
-  abstract class EncodedString(str: String)
-  case class HexString(str: String) extends EncodedString(str)
-  case class Base64String(str: String) extends EncodedString(str)
+  abstract class EncodedString(str: String) {
+    def getBytes(): Array[Byte]
+  }
+  case class HexString(str: String) extends EncodedString(str) {
+    def getBytes(): Array[Byte] = hex2bytes(this)
+  }
+  case class Base64String(str: String) extends EncodedString(str) {
+    def getBytes(): Array[Byte] = base642bytes(this)
+  }
 
   implicit def arrayToList[A](a: Array[A]) = a.toList
   implicit def listToArray[A:ClassTag](l: List[A]) = l.toArray

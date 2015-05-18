@@ -6,9 +6,9 @@ import cryptopals.Set1._
 class Set1 extends Specification {
   "challenge 1" should {
     "convert hex to base64" in {
-      val input = new HexString("49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d")
-      val out = new Base64String("SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t")
-      (input: Array[Byte]) === (out: Array[Byte])
+      val l = new HexString("49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d")
+      val r = new Base64String("SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t")
+      l.getBytes === r.getBytes
     }
   }
 
@@ -23,7 +23,7 @@ class Set1 extends Specification {
     "work" in {
       val hex = new HexString("C0051E")
       val bytes = Array[Byte](192.toByte, 5, 30)
-      hex2bytes(hex) === bytes
+      hex.getBytes === bytes
     }
   }
 
