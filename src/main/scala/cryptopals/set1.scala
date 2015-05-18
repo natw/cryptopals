@@ -1,6 +1,7 @@
 package cryptopals
 
 import scala.collection.JavaConverters._
+import scala.collection.GenIterable
 import scala.language.implicitConversions
 import javax.xml.bind.DatatypeConverter
 
@@ -8,44 +9,39 @@ import scala.reflect.ClassTag
 
 object Set1 {
 
+  abstract class EncodedString(str: String)
+  case class HexString(str: String) extends EncodedString(str)
+  case class Base64String(str: String) extends EncodedString(str)
+
   implicit def arrayToList[A](a: Array[A]) = a.toList
   implicit def listToArray[A:ClassTag](l: List[A]) = l.toArray
 
-  def bytes2hex(input: List[Byte]): String = {
-    DatatypeConverter.printHexBinary(input)
+  implicit def bytes2ascii(input: Array[Byte]): String = { new String(input, "utf-8") }
+  implicit def ascii2bytes(input: String): Array[Byte] = { input.getBytes }
+
+  implicit def hex2bytes(input: HexString): Array[Byte] = { DatatypeConverter.parseHexBinary(input.str) }
+  implicit def bytes2hex(input: Array[Byte]): HexString = { new HexString(DatatypeConverter.printHexBinary(input)) }
+  implicit def hex2ascii(input: HexString): String = { bytes2ascii(hex2bytes(input)) }
+
+  implicit def bytes2base64(input: Array[Byte]): Base64String = { new Base64String(DatatypeConverter.printBase64Binary(input)) }
+  implicit def base642bytes(input: Base64String): Array[Byte] = { DatatypeConverter.parseBase64Binary(input.str) }
+
+  // def fixedXOR[T <: GenIterable[Byte]](left: T, right: T): Array[Byte] = {
+  def fixedXOR[T <% Iterable[Byte]](left: Array[Byte], right: T): Array[Byte] = {
+    left.zip(right).map { case (l:Byte, r:Byte) => (l^r).toByte }.toArray
   }
 
-  def hex2bytes(input: String): List[Byte] = {
-    DatatypeConverter.parseHexBinary(input)
-  }
-
-  def hex2base64(input: String): String = {
-    DatatypeConverter.printBase64Binary(DatatypeConverter.parseHexBinary(input))
-  }
-
-  def hex2ASCII(input: String): String = {
-    DatatypeConverter.parseHexBinary(input).toString
-  }
-
-  def ascii2hex(input: String): String = {
-    bytes2hex(input.toCharArray.map(_.toByte))
-  }
-
-  def hexXOR(l: String, r: String): String = bytes2hex(fixedXOR(hex2bytes(l), hex2bytes(r)))
-
-
-  def fixedXOR[T <% Iterable[Byte]](left: T, right: T): List[Byte] = {
-    left.zip(right).map { case (l, r) => (l^r).toByte }.toList
-  }
-
-  def singleByteXOR(ciphertext: List[Byte], key: Byte): List[Byte] = {
-    fixedXOR(ciphertext, Iterator.continually(key).toIterable)
-  }
-
-  def repeatingXOR[T <: Iterable[Byte]](ct: T, key: T): List[Byte] = {
+  // def repeatingXOR[T <% GenIterable[Byte]](ct: T, key: T): Array[Byte] = {
+  def repeatingXOR(ct: Array[Byte], key: Array[Byte]): Array[Byte] = {
     def cycle: Stream[Byte] = key.toStream append cycle
     fixedXOR(ct, cycle)
   }
+
+  // def singleByteXOR[T <% GenIterable[Byte]](ciphertext: T, key: Byte): Array[Byte] = {
+  def singleByteXOR(ciphertext: Array[Byte], key: Byte): Array[Byte] = {
+    repeatingXOR(ciphertext, List(key))
+  }
+
 
   val EnglishLetterDistribution: Map[Char, Double] = Map(
     'E' -> .1249,
