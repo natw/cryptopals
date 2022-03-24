@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/base64"
 	"encoding/hex"
+
+	"github.com/pkg/errors"
 )
 
 func Hex2Base64(input string) (string, error) {
@@ -14,4 +16,19 @@ func Hex2Base64(input string) (string, error) {
 	}
 	out = base64.StdEncoding.EncodeToString(bs)
 	return out, nil
+}
+
+func FixedXOR(a []byte, b []byte) ([]byte, error) {
+	result := make([]byte, len(a))
+	var err error
+
+	if len(a) != len(b) {
+		return result, errors.New("arguments must be same length")
+	}
+
+	for i := range a {
+		result[i] = a[i] ^ b[i]
+	}
+
+	return result, err
 }
