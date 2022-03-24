@@ -32,3 +32,11 @@ func FixedXOR(a []byte, b []byte) ([]byte, error) {
 
 	return result, err
 }
+
+func SingleXOR(a []byte, b byte) []byte {
+	result := make([]byte, len(a))
+	for i := range a {
+		result[i] = a[i] ^ b
+	}
+	return result
+}
