@@ -64,6 +64,50 @@ func (s *EnglishFreqScore) Score(input string) int {
 	return int(subtotal * 100)
 }
 
+type LetterRatio struct{}
+
+func (s *LetterRatio) Score(input string) int {
+	letterCount := float32(0.1)
+	otherCount := float32(1)
+	for _, c := range input {
+		if s.isLetter(c) {
+			letterCount++
+		} else {
+			otherCount++
+		}
+	}
+	return -int((letterCount / otherCount) * 100)
+}
+
+func (s *LetterRatio) isLetter(c rune) bool {
+	return c == ' ' || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
+}
+
+type EnglishFreqScore2 struct{}
+
+func (s *EnglishFreqScore2) Score(input string) int {
+	freqs := CalcLetterFrequencies(input)
+
+	candidates := make(map[rune]bool)
+
+	for k := range englishFrequencies {
+		candidates[k] = true
+	}
+	for k := range freqs {
+		candidates[k] = true
+	}
+
+	distanceTotal := 0.0
+	for cand := range candidates {
+		englishFreq := englishFrequencies[cand]
+		ctFreq := freqs[cand]
+		distance := math.Abs(englishFreq - ctFreq)
+		distanceTotal += distance
+	}
+	distanceDistance := distanceTotal / float64(len(candidates))
+	return int(distanceDistance * 100)
+}
+
 func CalcLetterFrequencies(pt string) map[rune]float64 {
 	counts := make(map[rune]int)
 	freqs := make(map[rune]float64)
@@ -82,4 +126,24 @@ func CalcLetterFrequencies(pt string) map[rune]float64 {
 	}
 
 	return freqs
+}
+
+// func OrderByScore(lines []string, scorer Scorer) []string {
+// }
+
+type ScorableStrings struct {
+	Scorer  Scorer
+	Strings []string
+}
+
+func (s ScorableStrings) Len() int {
+	return len(s.Strings)
+}
+
+func (s ScorableStrings) Less(i int, j int) bool {
+	return s.Scorer.Score(s.Strings[i]) < s.Scorer.Score(s.Strings[j])
+}
+
+func (s ScorableStrings) Swap(i, j int) {
+	s.Strings[i], s.Strings[j] = s.Strings[j], s.Strings[i]
 }
