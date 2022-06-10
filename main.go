@@ -11,7 +11,15 @@ import (
 
 func main() {
 	// s1c3()
-	s1c4()
+	// s1c4()
+	s1c5()
+}
+
+func s1c5() {
+	pt := "Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal"
+
+	ct := repeatingKeyXOR([]byte(pt), []byte("ICE"))
+	fmt.Println(hex.EncodeToString(ct))
 }
 
 func s1c4() {
@@ -44,7 +52,6 @@ func s1c4() {
 		if err != nil {
 			panic(err)
 		}
-		// fmt.Printf("high score\n ct: %q\nkey: %c\n pt: %q\n\n", hex.EncodeToString(ctBytes), key, pt)
 	}
 	fmt.Printf("best\nkey: %c\npt: %q", bestKey, bestPt)
 }
