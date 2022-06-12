@@ -12,7 +12,11 @@ import (
 func main() {
 	// s1c3()
 	// s1c4()
-	s1c5()
+	// s1c5()
+	s1c6()
+}
+
+func s1c6() {
 }
 
 func s1c5() {

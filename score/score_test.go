@@ -24,5 +24,5 @@ func TestEnglishFreqScore(t *testing.T) {
 
 	score1 := sc.Score("hi there, what is up?")
 	score2 := sc.Score("asdfouiayspofpasodufiasidufapoisdufopiasudfopiuasdofpuasopdfuiasiopdfu")
-	require.Greater(t, score2, score1)
+	require.Greater(t, score1, score2)
 }
